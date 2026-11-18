@@ -53,6 +53,51 @@ select{font:inherit;color:inherit;background:var(--card);border:1px solid var(--
 .tabs{display:flex;gap:6px}
 .hidden{display:none!important}
 .small{font-size:13px;color:var(--muted)}
+.nav{display:grid;grid-template-columns:repeat(4,1fr);background:var(--line);border-radius:12px;padding:3px;gap:3px;margin-bottom:12px}
+.nav button{border:none;background:none;border-radius:9px;padding:8px;font-weight:600;color:var(--muted)}
+.nav button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.drillbar{display:flex;justify-content:space-between;align-items:center;background:var(--card);border:1px solid var(--accent);color:var(--accent);border-radius:12px;padding:6px 6px 6px 12px;margin-bottom:10px;font-weight:600;font-size:14px}
+.mapbar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.mapbar select,.mapbar input{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 10px;width:100%;min-width:0}
+.mapwrap{position:relative;height:calc(100vh - 210px);min-height:360px;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;touch-action:none}
+#map{display:block;width:100%;height:100%;cursor:grab}
+#map.dragging{cursor:grabbing}
+.mapempty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;color:var(--muted)}
+.mapzoom{position:absolute;right:8px;bottom:8px;display:flex;flex-direction:column;gap:4px}
+.mapzoom button{width:36px;height:36px;padding:0;font-size:18px;border-radius:10px}
+.mapinfo{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-top:8px;font-size:15px}
+.mapinfo h3{margin:0 0 6px;font-size:17px}
+.mapinfo p{margin:0 0 4px}
+.mapinfo .nb{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.ghead{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.gtitle{font-size:22px;margin:4px 0 2px}
+.primary{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:600}
+.danger{color:var(--no)}
+.topic{margin:20px 0 4px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.g{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px 14px;margin:10px 0}
+.g.editing{border-color:var(--accent)}
+.gh{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.gh h3{margin:0;font-size:17px}
+.gh .link{font-size:14px;font-weight:600}
+.terms{display:flex;flex-wrap:wrap;gap:6px}
+.tt{font-size:15px;padding:6px 11px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+.tt.lo{color:var(--muted)}
+.tt.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tt.plain{cursor:default;border-style:dashed}
+.gd{font-size:15px;background:var(--bg);border-radius:10px;padding:10px 12px;margin-top:10px}
+.gd b{display:block;margin-bottom:4px}
+.gd p{margin:0 0 4px}
+.ef{display:grid;gap:8px;margin-bottom:10px}
+.ef label{display:grid;gap:4px;font-size:13px;font-weight:600;color:var(--muted)}
+.g input{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 10px;width:100%}
+.eitems{margin-bottom:8px}
+.erow{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid var(--line)}
+.erow:last-child{border-bottom:none}
+.ib{padding:4px 9px;border-radius:8px;font-size:14px}
+.ib.x{color:var(--no)}
+.results{margin-top:4px}
+.res{display:flex;justify-content:space-between;gap:8px;width:100%;text-align:left;margin-top:4px;border-radius:10px}
+.ebar{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:12px}
 .drop{position:fixed;inset:0;background:rgba(59,91,219,.12);border:3px dashed var(--accent);display:none;align-items:center;justify-content:center;font-size:22px;font-weight:600;color:var(--accent);z-index:9;pointer-events:none}
 body.dragging .drop{display:flex}
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:10}
@@ -69,9 +114,19 @@ body.dragging .drop{display:flex}
       <button class="link" id="saveBtn">Save</button>
       <button class="link" id="loadBtn">Load</button>
       <input type="file" id="fileIn" accept=".json,application/json" hidden>
-      <button class="link" id="toggleList">Piles</button>
     </div>
   </header>
+
+  <nav class="nav">
+    <button class="on" data-tab="study">Study</button>
+    <button data-tab="listView">Piles</button>
+    <button data-tab="guideView">Guides</button>
+    <button data-tab="mapView">Map</button>
+  </nav>
+
+  <div id="drillBar" class="drillbar hidden"><span id="drillName"></span><button class="link" id="drillExit">Exit</button></div>
+
+  <div id="controls">
 
   <div class="filters">
     <select id="chSel"></select>
@@ -93,6 +148,7 @@ body.dragging .drop{display:flex}
     <div class="stat"><b id="sNew">0</b>New</div>
     <div class="stat no"><b id="sNo">0</b>Don't get it</div>
     <div class="stat yes"><b id="sYes">0</b>Got it</div>
+  </div>
   </div>
 
   <section id="study">
@@ -121,6 +177,28 @@ body.dragging .drop{display:flex}
     <div class="list" id="list"></div>
     <p class="row" style="justify-content:center"><button id="reset">Reset this selection</button></p>
   </section>
+  <section id="guideView" class="hidden">
+    <div class="ghead">
+      <h2 class="gtitle">Study Guide</h2>
+      <button id="newGroup" class="primary">+ New group</button>
+    </div>
+    <p class="small">Tap a term to see your definition. Gray = low yield.</p>
+    <div id="guideBody"></div>
+  </section>
+
+  <section id="mapView" class="hidden">
+    <div class="mapbar">
+      <select id="mapTopic"></select>
+      <input id="mapFind" placeholder="Find a term…" autocomplete="off" list="mapNames">
+      <datalist id="mapNames"></datalist>
+    </div>
+    <div class="mapwrap" id="mapWrap">
+      <canvas id="map"></canvas>
+      <div class="mapempty hidden" id="mapEmpty">Make some groups in <b>Guides</b> and they'll show up here.</div>
+      <div class="mapzoom"><button id="zIn" aria-label="Zoom in">+</button><button id="zOut" aria-label="Zoom out">−</button><button id="zFit" aria-label="Fit">⤢</button></div>
+    </div>
+    <div class="mapinfo hidden" id="mapInfo"></div>
+  </section>
 </div>
 
 <script>
@@ -136,13 +214,18 @@ $('chSel').innerHTML='<option value="all">All chapters</option>'+DATA.chapters.m
 $('chSel').value=chSel;
 $('mode').value=load(MODEKEY,'todo');
 $('yield').value=load(YKEY,'all');
-let queue=[], idx=0, history=[], pile='no';
+let queue=[], idx=0, history=[], pile='no', drill=null;
+const GKEY='ps-flash-guides';
+const byId=new Map(cards.map((c,i)=>[c.id,i]));
+let guides=load(GKEY,null);
+if(!Array.isArray(guides)) guides=[];
+function saveGuides(){save(GKEY,guides)}
 
 function pileOf(c){return status[c.id]||'new'}
-function inScope(){const y=$('yield').value;return cards.filter(c=>(chSel==='all'||c.ch==+chSel)&&(y==='all'||(y==='lo'?c.lo:!c.lo)))}
+function inScope(){if(drill)return drill.i.map(i=>cards[i]);const y=$('yield').value;return cards.filter(c=>(chSel==='all'||c.ch==+chSel)&&(y==='all'||(y==='lo'?c.lo:!c.lo)))}
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function build(){
-  const m=$('mode').value;
+  const m=drill?'all':$('mode').value;
   queue=shuffle(inScope().filter(c=>{const p=pileOf(c);return m==='all'||(m==='todo'?p!=='yes':p===m)}));
   idx=0; history=[]; render();
 }
@@ -156,7 +239,7 @@ function render(){
   stats();
   const card=$('card'); card.classList.remove('flipped');
   if(idx>=queue.length){
-    card.innerHTML='<div class="done"><b style="font-size:20px;color:var(--ink)">Done with this set.</b><br><br>Hit Shuffle to go again, or switch the mode.</div>';
+    card.innerHTML='<div class="done"><b style="font-size:20px;color:var(--ink)">Done with this set.</b><br><br>'+(drill?'Hit Shuffle to drill again, or Exit above.':'Hit Shuffle to go again, or switch the mode.')+'</div>';
     $('actions').classList.add('hidden'); return;
   }
   $('actions').classList.remove('hidden');
@@ -184,7 +267,7 @@ document.addEventListener('keydown',e=>{
 });
 
 // filters
-function refilter(){build();if(!$('listView').classList.contains('hidden'))drawList()}
+function refilter(){build();if(tab==='listView')drawList()}
 $('chSel').onchange=()=>{chSel=$('chSel').value;save(CHKEY,chSel);refilter()};
 $('yield').onchange=()=>{save(YKEY,$('yield').value);refilter()};
 
@@ -195,13 +278,106 @@ function drawList(){
   document.querySelectorAll('[data-pile]').forEach(b=>b.classList.toggle('on',b.dataset.pile===pile));
 }
 document.querySelector('.tabs').onclick=e=>{const b=e.target.closest('[data-pile]'); if(!b) return; pile=b.dataset.pile; drawList();};
-$('toggleList').onclick=()=>{const show=$('listView').classList.contains('hidden'); $('listView').classList.toggle('hidden',!show); $('study').classList.toggle('hidden',show); $('toggleList').textContent=show?'Study':'Piles'; if(show) drawList(); else build();};
-$('reset').onclick=()=>{if(!confirm('Move every card in the current chapter/yield selection back to New?'))return;inScope().forEach(c=>delete status[c.id]); save(KEY,status); drawList(); stats();};
+let tab='study';
+function showTab(t){
+  tab=t;
+  ['study','listView','guideView','mapView'].forEach(x=>$(x).classList.toggle('hidden',x!==t));
+  document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
+  $('controls').classList.toggle('hidden',t==='guideView'||t==='mapView');
+  $('drillBar').classList.toggle('hidden',!drill||t==='guideView'||t==='mapView');
+  if(t==='listView') drawList();
+  if(t==='mapView') MAP.open(); else MAP.close();
+  window.scrollTo(0,0);
+}
+document.querySelector('.nav').onclick=e=>{const b=e.target.closest('[data-tab]'); if(b) showTab(b.dataset.tab)};
+function setDrill(g){
+  drill=g||null;
+  $('drillName').textContent=drill?'Drilling: '+drill.n+' ('+drill.i.length+')':'';
+  ['chSel','yield','mode'].forEach(x=>$(x).classList.toggle('hidden',!!drill));
+  build(); showTab('study');
+}
+let editing=null, openTerm={};
+const gIdx=id=>guides.findIndex(g=>g.id===id);
+function itemLabel(it){if(it.t!=null)return it.t;const i=byId.get(it.c);return i==null?'(missing term)':cards[i].term}
+function groupCards(g){return g.items.map(it=>byId.get(it.c)).filter(i=>i!=null)}
+function viewHTML(g){
+  const n=groupCards(g).length, ot=openTerm[g.id];
+  let def='';
+  if(ot!=null){const it=g.items[ot]; const i=it&&byId.get(it.c); if(i!=null) def='<div class="gd"><b>'+esc(cards[i].term)+'</b>'+defHTML(cards[i])+'<span class="small">Ch '+cards[i].ch+'</span></div>';}
+  return '<div class="g" data-id="'+g.id+'"><div class="gh"><h3>'+esc(g.name||'Untitled')+'</h3><div class="row" style="gap:2px">'+
+    (n?'<button class="link" data-act="drill">Drill '+n+'</button>':'')+'<button class="link" data-act="edit">Edit</button></div></div>'+
+    (g.items.length?'<div class="terms">'+g.items.map((it,k)=>{const i=byId.get(it.c);const cls=it.t!=null?'tt plain':'tt'+(i!=null&&cards[i].lo?' lo':'')+(ot===k?' on':'');return '<button class="'+cls+'" data-k="'+k+'">'+esc(itemLabel(it))+'</button>'}).join('')+'</div>':'<p class="small">No terms yet. Tap Edit to add some.</p>')+def+'</div>';
+}
+function editHTML(g){
+  const topics=[...new Set(guides.map(x=>x.topic).filter(Boolean))];
+  return '<div class="g editing" data-id="'+g.id+'">'+
+   '<div class="ef"><label>Group name<input data-f="name" value="'+esc(g.name||'').replace(/"/g,'&quot;')+'" placeholder="e.g. Frontal Lobe"></label>'+
+   '<label>Topic <span class="small">(optional heading)</span><input data-f="topic" list="topicList" value="'+esc(g.topic||'').replace(/"/g,'&quot;')+'" placeholder="e.g. Brain"></label></div>'+
+   '<datalist id="topicList">'+topics.map(t=>'<option value="'+esc(t).replace(/"/g,'&quot;')+'">').join('')+'</datalist>'+
+   '<div class="eitems">'+(g.items.length?g.items.map((it,k)=>'<div class="erow"><span>'+esc(itemLabel(it))+'</span><span class="row" style="gap:2px;flex-wrap:nowrap"><button class="ib" data-act="iup" data-k="'+k+'" aria-label="Move up">↑</button><button class="ib" data-act="idown" data-k="'+k+'" aria-label="Move down">↓</button><button class="ib x" data-act="idel" data-k="'+k+'" aria-label="Remove">×</button></span></div>').join(''):'<p class="small">No terms yet.</p>')+'</div>'+
+   '<input class="search" data-f="search" placeholder="Search your terms to add…" autocomplete="off"><div class="results"></div>'+
+   '<div class="ebar"><button data-act="gup">↑ Move group</button><button data-act="gdown">↓ Move group</button><button class="danger" data-act="gdel">Delete</button><button class="primary" data-act="done">Done</button></div></div>';
+}
+function drawGuides(){
+  let html='', last=undefined;
+  guides.forEach(g=>{
+    const t=g.topic||'';
+    if(t!==last){html+=t?'<h4 class="topic">'+esc(t)+'</h4>':(last!==undefined?'<h4 class="topic">Other</h4>':'');last=t}
+    html+=editing===g.id?editHTML(g):viewHTML(g);
+  });
+  $('guideBody').innerHTML=html||'<p class="small" style="text-align:center;padding:24px 0">No groups yet. Hit "+ New group".</p>';
+  if(editing){const el=document.querySelector('.editing [data-f=search]');}
+}
+function results(q){
+  q=q.trim().toLowerCase(); if(!q) return '';
+  const hits=[]; for(let i=0;i<cards.length&&hits.length<8;i++){if(cards[i].term.toLowerCase().includes(q))hits.push(i)}
+  return hits.map(i=>'<button class="res" data-act="add" data-i="'+i+'"><span>'+esc(cards[i].term)+'</span><span class="small">'+(cards[i].lo?'low · ':'')+'Ch '+cards[i].ch+'</span></button>').join('')+
+    '<button class="res" data-act="addtext"><span>Add "'+esc(q)+'" as plain text</span><span class="small">no definition</span></button>';
+}
+$('newGroup').onclick=()=>{
+  const g={id:'g'+Date.now(),topic:guides.length?guides[guides.length-1].topic:'',name:'',items:[]};
+  guides.push(g); saveGuides(); editing=g.id; drawGuides();
+  const el=document.querySelector('.editing [data-f=name]'); el.scrollIntoView({block:'center'}); el.focus();
+};
+$('guideBody').addEventListener('input',e=>{
+  const box=e.target.closest('.g'); if(!box) return; const g=guides[gIdx(box.dataset.id)]; const f=e.target.dataset.f;
+  if(f==='search'){box.querySelector('.results').innerHTML=results(e.target.value);return}
+  if(f==='name'||f==='topic'){g[f]=e.target.value;saveGuides()}
+});
+$('guideBody').addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&e.target.dataset.f==='search'){e.preventDefault();const b=e.target.parentElement.querySelector('.res');if(b)b.click()}
+});
+$('guideBody').addEventListener('click',e=>{
+  const box=e.target.closest('.g'); if(!box) return;
+  const gi=gIdx(box.dataset.id), g=guides[gi];
+  const tt=e.target.closest('.tt');
+  if(tt&&!tt.classList.contains('plain')){const k=+tt.dataset.k; openTerm[g.id]=openTerm[g.id]===k?null:k; drawGuides(); return}
+  const b=e.target.closest('[data-act]'); if(!b) return;
+  const a=b.dataset.act, k=+b.dataset.k;
+  const refocus=()=>{const s=document.querySelector('.editing [data-f=search]'); if(s) s.focus()};
+  if(a==='drill'){const ix=groupCards(g);setDrill({n:g.name||'Untitled',i:[...new Set(ix)]});return}
+  if(a==='edit'){editing=g.id;drawGuides();return}
+  if(a==='done'){editing=null;drawGuides();box.scrollIntoView&&document.querySelector('[data-id="'+g.id+'"]').scrollIntoView({block:'nearest'});return}
+  if(a==='add'){const id=cards[+b.dataset.i].id; if(!g.items.some(x=>x.c===id)) g.items.push({c:id}); saveGuides(); drawGuides(); refocus(); return}
+  if(a==='addtext'){const v=box.querySelector('[data-f=search]').value.trim(); if(v) g.items.push({t:v}); saveGuides(); drawGuides(); refocus(); return}
+  if(a==='idel'){g.items.splice(k,1)}
+  else if(a==='iup'&&k>0){[g.items[k-1],g.items[k]]=[g.items[k],g.items[k-1]]}
+  else if(a==='idown'&&k<g.items.length-1){[g.items[k+1],g.items[k]]=[g.items[k],g.items[k+1]]}
+  else if(a==='gup'&&gi>0){[guides[gi-1],guides[gi]]=[guides[gi],guides[gi-1]]}
+  else if(a==='gdown'&&gi<guides.length-1){[guides[gi+1],guides[gi]]=[guides[gi],guides[gi+1]]}
+  else if(a==='gdel'){if(!confirm('Delete "'+(g.name||'Untitled')+'"?'))return; guides.splice(gi,1); editing=null}
+  else return;
+  saveGuides(); drawGuides();
+  if(a==='gup'||a==='gdown'){const el=document.querySelector('[data-id="'+g.id+'"]'); if(el) el.scrollIntoView({block:'center'})}
+});
+drawGuides();
+$('drillExit').onclick=()=>setDrill(null);
+$('reset').onclick=()=>{if(drill){if(!confirm('Move every card in this drill group back to New?'))return;inScope().forEach(c=>delete status[c.id]);save(KEY,status);drawList();stats();return;}if(!confirm('Move every card in the current chapter/yield selection back to New?'))return;inScope().forEach(c=>delete status[c.id]); save(KEY,status); drawList(); stats();};
 
 // save / load progress file
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2200)}
 $('saveBtn').onclick=()=>{
-  const blob=new Blob([JSON.stringify({app:'ps-flash',v:1,saved:new Date().toISOString(),status,chapter:chSel,yield:$('yield').value,mode:$('mode').value})],{type:'application/json'});
+  const blob=new Blob([JSON.stringify({app:'ps-flash',v:1,saved:new Date().toISOString(),status,guides,chapter:chSel,yield:$('yield').value,mode:$('mode').value})],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ps-progress.json';document.body.appendChild(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Progress saved');
 };
@@ -213,8 +389,9 @@ function loadFile(f){
     status=o.status; save(KEY,status);
     if(o.chapter){chSel=String(o.chapter);$('chSel').value=chSel;save(CHKEY,chSel)}
     if(o.yield){$('yield').value=o.yield;save(YKEY,o.yield)}
+    if(Array.isArray(o.guides)){guides=o.guides;saveGuides();editing=null;drawGuides()}
     if(o.mode){$('mode').value=o.mode;save(MODEKEY,o.mode)}
-    build(); if(!$('listView').classList.contains('hidden')) drawList();
+    build(); if(tab==='listView') drawList();
     const n=Object.values(status), no=n.filter(x=>x==='no').length, yes=n.filter(x=>x==='yes').length;
     toast('Loaded: '+no+" don't get it, "+yes+' got it');
   }).catch(()=>toast("That file isn't a progress file"));
@@ -226,6 +403,160 @@ addEventListener('dragenter',e=>{e.preventDefault();dragN++;document.body.classL
 addEventListener('dragleave',e=>{if(--dragN<=0){dragN=0;document.body.classList.remove('dragging')}});
 addEventListener('dragover',e=>e.preventDefault());
 addEventListener('drop',e=>{e.preventDefault();dragN=0;document.body.classList.remove('dragging');loadFile(e.dataTransfer.files[0])});
+
+// ---- concept map ----
+const MAP=(()=>{
+  const cv=$('map'), ctx=cv.getContext('2d');
+  let nodes=[], links=[], nbr=new Map(), W=0, H=0, dpr=1;
+  let cam={x:0,y:0,k:1}, alpha=0, raf=0, active=false, sel=null, hover=null, sig='';
+  const norm=x=>String(x).toLowerCase().replace(/[’']/g,"'").replace(/\s+/g,' ').trim();
+  const cardByName=new Map();
+  cards.forEach((c,i)=>{
+    const full=norm(c.term); if(!cardByName.has(full)) cardByName.set(full,i);
+    c.term.split(/\s*\/\s*/).forEach(p=>{const a=norm(p.replace(/\s*\(.*?\)\s*/g,' ')); if(a&&!cardByName.has(a)) cardByName.set(a,i)});
+    const np=norm(c.term.replace(/\s*\(.*?\)\s*/g,' ')); if(!cardByName.has(np)) cardByName.set(np,i);
+  });
+  const colorsFor=()=>{const cs=getComputedStyle(document.documentElement);const g=v=>cs.getPropertyValue(v).trim();return{ink:g('--ink'),muted:g('--muted'),line:g('--line'),accent:g('--accent'),card:g('--card'),bg:g('--bg')}};
+  const PAL=['#3b5bdb','#c2410c','#15803d','#9333ea','#0e7490','#b45309','#be185d','#4d7c0f'];
+  function build(){
+    const topic=$('mapTopic').value||'__all';
+    const gs=guides.filter(g=>topic==='__all'||(g.topic||'')===topic);
+    const topics=[...new Set(guides.map(g=>g.topic||''))];
+    const old=new Map(nodes.map(n=>[n.key,n]));
+    const N=new Map(); links=[]; nbr=new Map();
+    const groupKey=new Map();
+    gs.forEach(g=>{const nm=norm(g.name||'Untitled');const ci=cardByName.get(nm);groupKey.set(g.id,ci!=null?'c'+ci:'g:'+nm)});
+    const groupByName=new Map(gs.map(g=>[norm(g.name||'Untitled'),groupKey.get(g.id)]));
+    const add=(key,label,kind,ci,topic)=>{
+      let n=N.get(key);
+      if(!n){const o=old.get(key);n={key,label,kind,ci,topic,x:o?o.x:(Math.random()-.5)*300,y:o?o.y:(Math.random()-.5)*300,vx:0,vy:0,deg:0,fixed:false};N.set(key,n)}
+      if(kind==='group'){n.kind='group';n.label=label;n.topic=topic}
+      if(ci!=null&&n.ci==null) n.ci=ci;
+      return n;
+    };
+    gs.forEach(g=>{
+      const gk=groupKey.get(g.id), ci=gk[0]==='c'?+gk.slice(1):null;
+      const gn=add(gk,g.name||'Untitled','group',ci,g.topic||'');
+      g.items.forEach(it=>{
+        let key,label,ci2=null;
+        if(it.t!=null){const nm=norm(it.t);key=groupByName.get(nm);if(!key){const c=cardByName.get(nm);key=c!=null?'c'+c:'t:'+nm;ci2=c??null}label=it.t}
+        else{const i=byId.get(it.c);if(i==null)return;key='c'+i;ci2=i;label=cards[i].term}
+        if(key===gk) return;
+        const tn=add(key,label,'term',ci2,g.topic||'');
+        if(!links.some(l=>(l.s===gn&&l.t===tn)||(l.s===tn&&l.t===gn))) links.push({s:gn,t:tn});
+      });
+    });
+    nodes=[...N.values()];
+    nodes.forEach(n=>{n.deg=0;nbr.set(n,new Set())});
+    links.forEach(l=>{l.s.deg++;l.t.deg++;nbr.get(l.s).add(l.t);nbr.get(l.t).add(l.s)});
+    nodes.forEach(n=>{n.r=(n.kind==='group'?7:4)+Math.sqrt(n.deg)*2.2;n.col=PAL[Math.max(0,topics.indexOf(n.topic))%PAL.length]});
+    $('mapEmpty').classList.toggle('hidden',nodes.length>0);
+    $('mapNames').innerHTML=nodes.map(n=>'<option value="'+esc(n.label).replace(/"/g,'&quot;')+'">').join('');
+    if(sel&&!N.has(sel.key)) sel=null; else if(sel) sel=N.get(sel.key);
+    info();
+  }
+  function step(){
+    const n=nodes.length; if(!n) return;
+    const rep=7000, len=95, kS=.05;
+    for(let i=0;i<n;i++){const a=nodes[i];for(let j=i+1;j<n;j++){const b=nodes[j];let dx=a.x-b.x,dy=a.y-b.y,d2=dx*dx+dy*dy+.01;if(d2>250000)continue;const f=rep/d2*alpha,d=Math.sqrt(d2);dx/=d;dy/=d;a.vx+=dx*f;a.vy+=dy*f;b.vx-=dx*f;b.vy-=dy*f}}
+    links.forEach(l=>{const dx=l.t.x-l.s.x,dy=l.t.y-l.s.y,d=Math.sqrt(dx*dx+dy*dy)||1;const L=len+(l.s.r+l.t.r);const f=(d-L)*kS*alpha;const fx=dx/d*f,fy=dy/d*f;l.s.vx+=fx;l.s.vy+=fy;l.t.vx-=fx;l.t.vy-=fy});
+    nodes.forEach(a=>{a.vx-=a.x*.004*alpha;a.vy-=a.y*.004*alpha;if(a.fixed){a.vx=a.vy=0;return}a.vx*=.6;a.vy*=.6;a.x+=a.vx;a.y+=a.vy});
+    alpha*=.985; if(alpha<.02) alpha=0;
+  }
+  function draw(){
+    const C=colorsFor();
+    ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
+    ctx.translate(W/2+cam.x,H/2+cam.y);ctx.scale(cam.k,cam.k);
+    const focus=sel||hover, near=focus?nbr.get(focus):null;
+    const dim=n=>focus&&n!==focus&&!near.has(n);
+    ctx.lineWidth=1/cam.k;
+    links.forEach(l=>{const on=focus&&(l.s===focus||l.t===focus);ctx.strokeStyle=on?C.accent:C.line;ctx.globalAlpha=focus&&!on?.25:1;ctx.lineWidth=(on?2:1.2)/cam.k;ctx.beginPath();ctx.moveTo(l.s.x,l.s.y);ctx.lineTo(l.t.x,l.t.y);ctx.stroke()});
+    nodes.forEach(n=>{
+      ctx.globalAlpha=dim(n)?.2:1;
+      ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,7);
+      ctx.fillStyle=n.kind==='group'?n.col:(n.ci!=null&&cards[n.ci].lo?C.line:C.muted);ctx.fill();
+      if(n===sel){ctx.lineWidth=3/cam.k;ctx.strokeStyle=C.ink;ctx.stroke()}
+    });
+    ctx.textAlign='center';ctx.textBaseline='top';
+    nodes.forEach(n=>{
+      const show=n===focus||(near&&near.has(n))||(!focus&&(n.kind==='group'?true:cam.k>.9));
+      if(!show) return;
+      ctx.globalAlpha=dim(n)?.25:1;
+      const fs=(n.kind==='group'?13:11.5)/Math.max(cam.k,.6)*Math.min(cam.k,1.6)/Math.min(cam.k,1.6);
+      const px=(n.kind==='group'?12:11)/Math.min(cam.k,1.4);
+      ctx.font=(n.kind==='group'?'600 ':'')+px+'px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif';
+      const lab=n.label.length>34?n.label.slice(0,32)+'…':n.label;
+      ctx.lineWidth=3/cam.k;ctx.strokeStyle=C.card;ctx.strokeText(lab,n.x,n.y+n.r+3/cam.k);
+      ctx.fillStyle=n.kind==='group'?C.ink:C.muted;ctx.fillText(lab,n.x,n.y+n.r+3/cam.k);
+    });
+    ctx.globalAlpha=1;
+  }
+  function loop(){raf=0;if(!active)return;if(alpha>0)step();draw();if(alpha>0||dragN)raf=requestAnimationFrame(loop)}
+  function kick(a){alpha=Math.max(alpha,a||.6);if(!raf&&active)raf=requestAnimationFrame(loop)}
+  function redraw(){if(!raf&&active)raf=requestAnimationFrame(loop)}
+  function resize(){const r=cv.getBoundingClientRect();dpr=window.devicePixelRatio||1;W=r.width;H=r.height;cv.width=W*dpr;cv.height=H*dpr;redraw()}
+  function fit(){if(!nodes.length)return;let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;nodes.forEach(n=>{x0=Math.min(x0,n.x);y0=Math.min(y0,n.y);x1=Math.max(x1,n.x);y1=Math.max(y1,n.y)});const k=Math.min(W/(x1-x0+120),H/(y1-y0+120),2.2);cam.k=Math.max(.15,k);cam.x=-(x0+x1)/2*cam.k;cam.y=-(y0+y1)/2*cam.k;redraw()}
+  const toWorld=(px,py)=>({x:(px-W/2-cam.x)/cam.k,y:(py-H/2-cam.y)/cam.k});
+  function hit(px,py){const p=toWorld(px,py);let best=null,bd=1e9;nodes.forEach(n=>{const d=Math.hypot(n.x-p.x,n.y-p.y);const R=Math.max(n.r,12/cam.k);if(d<R&&d<bd){bd=d;best=n}});return best}
+  function zoomAt(px,py,f){const p=toWorld(px,py);cam.k=Math.min(5,Math.max(.12,cam.k*f));cam.x=px-W/2-p.x*cam.k;cam.y=py-H/2-p.y*cam.k;redraw()}
+  function info(){
+    const el=$('mapInfo');
+    if(!sel){el.classList.add('hidden');return}
+    const c=sel.ci!=null?cards[sel.ci]:null;
+    const ns=[...nbr.get(sel)||[]].sort((a,b)=>(b.kind==='group')-(a.kind==='group')||a.label.localeCompare(b.label));
+    el.innerHTML='<h3>'+esc(sel.label)+'</h3>'+(c?defHTML(c)+'<span class="small">'+(c.lo?'Low yield · ':'')+'Ch '+c.ch+'</span>':'<p class="small">No definition (plain text or group name).</p>')+
+      (ns.length?'<div class="nb">'+ns.map(n=>'<button class="tt'+(n.kind==='group'?' on':'')+'" data-key="'+esc(n.key).replace(/"/g,'&quot;')+'">'+esc(n.label)+'</button>').join('')+'</div>':'');
+    el.classList.remove('hidden');
+  }
+  function select(n,center){sel=n;info();if(n&&center){cam.x=-n.x*cam.k;cam.y=-n.y*cam.k}redraw()}
+  $('mapInfo').onclick=e=>{const b=e.target.closest('[data-key]');if(!b)return;const n=nodes.find(x=>x.key===b.dataset.key);if(n)select(n,true)};
+  // pointer handling
+  const pts=new Map(); let dragN=null, panning=false, moved=0, pinch=null, downAt=null;
+  cv.addEventListener('pointerdown',e=>{
+    cv.setPointerCapture(e.pointerId);const r=cv.getBoundingClientRect();const px=e.clientX-r.left,py=e.clientY-r.top;
+    pts.set(e.pointerId,{x:px,y:py});moved=0;downAt={x:px,y:py};
+    if(pts.size===2){dragN=null;panning=false;const [a,b]=[...pts.values()];pinch={d:Math.hypot(a.x-b.x,a.y-b.y),k:cam.k};return}
+    const n=hit(px,py);
+    if(n){dragN=n;n.fixed=true;kick(.3)}else{panning=true}
+    cv.classList.add('dragging');
+  });
+  cv.addEventListener('pointermove',e=>{
+    const r=cv.getBoundingClientRect();const px=e.clientX-r.left,py=e.clientY-r.top;
+    if(!pts.has(e.pointerId)){const h=hit(px,py);if(h!==hover){hover=h;redraw()}return}
+    const prev=pts.get(e.pointerId);pts.set(e.pointerId,{x:px,y:py});
+    moved+=Math.abs(px-prev.x)+Math.abs(py-prev.y);
+    if(pinch&&pts.size===2){const [a,b]=[...pts.values()];const d=Math.hypot(a.x-b.x,a.y-b.y);const f=(pinch.k*d/pinch.d)/cam.k;zoomAt((a.x+b.x)/2,(a.y+b.y)/2,f);return}
+    if(dragN){const p=toWorld(px,py);dragN.x=p.x;dragN.y=p.y;kick(.3);redraw()}
+    else if(panning){cam.x+=px-prev.x;cam.y+=py-prev.y;redraw()}
+  });
+  const up=e=>{
+    if(!pts.has(e.pointerId))return;pts.delete(e.pointerId);
+    if(pts.size<2)pinch=null;
+    if(moved<6&&pts.size===0){const n=dragN||hit(downAt.x,downAt.y);select(n&&n!==sel?n:(n===sel?sel:null))}
+    if(dragN){dragN.fixed=false;dragN=null}
+    panning=false;cv.classList.remove('dragging');redraw();
+  };
+  cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+  cv.addEventListener('pointerleave',()=>{if(hover){hover=null;redraw()}});
+  cv.addEventListener('wheel',e=>{e.preventDefault();const r=cv.getBoundingClientRect();zoomAt(e.clientX-r.left,e.clientY-r.top,Math.exp(-e.deltaY*.0015))},{passive:false});
+  $('zIn').onclick=()=>zoomAt(W/2,H/2,1.3);$('zOut').onclick=()=>zoomAt(W/2,H/2,1/1.3);$('zFit').onclick=fit;
+  $('mapTopic').onchange=()=>{build();kick(.8);setTimeout(fit,700)};
+  $('mapFind').onchange=()=>{const q=norm($('mapFind').value);const n=nodes.find(x=>norm(x.label)===q)||nodes.find(x=>norm(x.label).includes(q));if(n){if(cam.k<1)cam.k=1.2;select(n,true)}};
+  addEventListener('resize',()=>{if(active)resize()});
+  return{
+    open(){
+      const topics=[...new Set(guides.map(g=>g.topic||''))];
+      const cur=$('mapTopic').value;
+      $('mapTopic').innerHTML='<option value="__all">All topics</option>'+topics.map(t=>'<option value="'+esc(t).replace(/"/g,'&quot;')+'">'+(t?esc(t):'(No topic)')+'</option>').join('');
+      if([...$('mapTopic').options].some(o=>o.value===cur))$('mapTopic').value=cur;
+      active=true;resize();
+      const ns=JSON.stringify(guides)+$('mapTopic').value;
+      if(ns!==sig){const first=!nodes.length;sig=ns;build();if(first){for(let i=0;i<300;i++){alpha=Math.max(alpha,.8);step()}alpha=.3}kick(.3);fit()}
+      redraw();
+    },
+    close(){active=false}
+  };
+})();
 
 build();
 </script>
